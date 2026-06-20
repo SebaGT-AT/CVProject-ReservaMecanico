@@ -7,6 +7,7 @@ export type AuthContextValue = {
   loading: boolean
   authenticate: (session: AuthResponse) => void
   logout: () => Promise<void>
+  request: <T>(path: string, options?: RequestInit) => Promise<T>
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)

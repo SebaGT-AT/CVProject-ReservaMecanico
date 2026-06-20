@@ -14,13 +14,13 @@ Cada etapa termina con migracion, pruebas, documentacion de API y una demo verti
 - Rate limiting, auditoria, cierre de sesiones y pruebas de seguridad. ✓
 - Registro diferenciado para cliente y profesional. ✓
 
-## 2. Profesionales y servicios
+## 2. Profesionales y servicios (completada)
 
-- Perfil publico, especialidades, zona horaria, servicios, precio y duracion.
-- Horario semanal y excepciones (feriados, vacaciones, bloqueos).
+- Perfil publico, especialidades, zona horaria, servicios, precio y duracion. ✓
 
 ## 3. Disponibilidad y citas
 
+- Horario semanal y excepciones (feriados, vacaciones, bloqueos).
 - Motor de slots, anticipacion minima, ventana maxima y buffers.
 - Reserva atomica sin solapamientos, cancelacion y transiciones de estado.
 - Historial de clientes y citas.
@@ -48,4 +48,4 @@ Cada etapa termina con migracion, pruebas, documentacion de API y una demo verti
 
 ## Siguiente etapa recomendada
 
-Implementar perfiles profesionales, especialidades y servicios antes del motor de disponibilidad.
+Implementar horarios semanales, excepciones y el motor de disponibilidad antes de aceptar citas.

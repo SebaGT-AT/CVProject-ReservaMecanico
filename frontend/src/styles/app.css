@@ -19,4 +19,18 @@ body { margin: 0; background: #f7f7f2; }
 .metric-card span { color: #66736c; }
 .metric-card strong { font-family: Georgia, serif; font-size: 3.5rem; font-weight: 500; }
 a { color: #246247; font-weight: 600; }
-
+.profile-title { font-family: Georgia, serif; font-size: clamp(2.6rem, 5vw, 4.6rem); line-height: 1; letter-spacing: -.045em; }
+.workspace-card { padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid #dfe3df; border-radius: 1.25rem; background: #fff; }
+.workspace-card h2 { font-family: Georgia, serif; font-size: 1.8rem; margin-bottom: 1.5rem; }
+.specialty-option { width: 100%; padding: .75rem 1rem; border: 1px solid #dfe3df; border-radius: .65rem; cursor: pointer; }
+.specialty-option:has(input:checked) { border-color: #2f7559; background: #edf5f0; }
+.service-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 0; border-top: 1px solid #e5e8e5; }
+.public-profile-hero { min-height: 460px; color: #f8f7e9; background: #183f31; }
+.public-profile-heading { max-width: 800px; margin-top: 7rem; }
+.public-profile-heading h1 { font-family: Georgia, serif; font-size: clamp(3.5rem, 8vw, 7rem); letter-spacing: -.055em; line-height: .9; }
+.public-profile-heading p { max-width: 680px; margin-top: 1.5rem; font-size: 1.2rem; color: #cddbd3; }
+.public-tag { padding: .35rem .7rem; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; font-size: .8rem; }
+.public-service { display: flex; justify-content: space-between; gap: 2rem; padding: 1.75rem 0; border-bottom: 1px solid #dfe3df; }
+.public-service h2 { font-family: Georgia, serif; }
+.coming-booking { margin-top: 2rem; padding: 1.5rem; border-radius: 1rem; color: #f7f7f2; background: #246247; }
+@media (max-width: 767px) { .service-row, .public-service { align-items: flex-start; flex-direction: column; } }

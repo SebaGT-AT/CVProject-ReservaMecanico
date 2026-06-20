@@ -1,13 +1,20 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { api } from '../../lib/api'
+import { api, ApiError } from '../../lib/api'
 import type { AuthResponse } from './types'
 import { AuthContext, type AuthContextValue } from './auth-context'
 
 let bootstrapPromise: Promise<AuthResponse> | null = null
+let renewalPromise: Promise<AuthResponse> | null = null
 
 function restoreSession() {
   bootstrapPromise ??= api<AuthResponse>('/api/v1/auth/refresh', { method: 'POST' })
   return bootstrapPromise
+}
+
+function renewSession() {
+  renewalPromise ??= api<AuthResponse>('/api/v1/auth/refresh', { method: 'POST' })
+    .finally(() => { renewalPromise = null })
+  return renewalPromise
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -36,6 +43,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await api<void>('/api/v1/auth/logout', { method: 'POST' })
       } finally {
         setSession(null)
+      }
+    },
+    async request<T>(path: string, options: RequestInit = {}) {
+      if (!session) throw new ApiError(401, 'Debes iniciar sesión', {})
+      const execute = (accessToken: string) => api<T>(path, {
+        ...options,
+        headers: { ...options.headers, Authorization: `Bearer ${accessToken}` },
+      })
+      try {
+        return await execute(session.accessToken)
+      } catch (error) {
+        if (!(error instanceof ApiError) || error.status !== 401) throw error
+        const refreshed = await renewSession()
+        setSession(refreshed)
+        return execute(refreshed.accessToken)
       }
     },
   }), [loading, session])

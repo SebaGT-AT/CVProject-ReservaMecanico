@@ -7,24 +7,28 @@ import { VerifyEmailPage } from '../features/auth/VerifyEmailPage'
 import { ForgotPasswordPage } from '../features/auth/ForgotPasswordPage'
 import { ResetPasswordPage } from '../features/auth/ResetPasswordPage'
 import { ResendVerificationPage } from '../features/auth/ResendVerificationPage'
+import { ProfessionalPage } from '../features/professional/ProfessionalPage'
+import { PublicProfessionalPage } from '../features/professional/PublicProfessionalPage'
+import type { Role } from '../features/auth/types'
 
-function ProtectedRoute() {
+function ProtectedRoute({ children, role }: { children: React.ReactNode; role?: Role }) {
   const { user, loading } = useAuth()
   if (loading) return <main className="min-vh-100 d-flex align-items-center justify-content-center"><div className="spinner-border text-success" role="status"><span className="visually-hidden">Cargando</span></div></main>
-  return user ? <DashboardPage /> : <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/login" replace />
+  if (role && user.role !== role) return <Navigate to="/dashboard" replace />
+  return children
 }
-
 export function App() {
-  return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/registro" element={<RegisterPage />} />
-      <Route path="/verificar-correo" element={<VerifyEmailPage />} />
-      <Route path="/olvide-contrasena" element={<ForgotPasswordPage />} />
-      <Route path="/restablecer-contrasena" element={<ResetPasswordPage />} />
-      <Route path="/reenviar-verificacion" element={<ResendVerificationPage />} />
-      <Route path="/dashboard" element={<ProtectedRoute />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
-  )
+  return <Routes>
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/registro" element={<RegisterPage />} />
+    <Route path="/verificar-correo" element={<VerifyEmailPage />} />
+    <Route path="/olvide-contrasena" element={<ForgotPasswordPage />} />
+    <Route path="/restablecer-contrasena" element={<ResetPasswordPage />} />
+    <Route path="/reenviar-verificacion" element={<ResendVerificationPage />} />
+    <Route path="/p/:slug" element={<PublicProfessionalPage />} />
+    <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+    <Route path="/perfil-profesional" element={<ProtectedRoute role="PROFESSIONAL"><ProfessionalPage /></ProtectedRoute>} />
+    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+  </Routes>
 }

@@ -6,6 +6,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.net.URI;
 import java.util.Map;
@@ -13,9 +15,20 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+    @ExceptionHandler(NotFoundException.class)
+    ProblemDetail notFound(NotFoundException exception) {
+        return problem(HttpStatus.NOT_FOUND, "No encontrado", exception.getMessage(), "not-found");
+    }
+
     @ExceptionHandler(ConflictException.class)
     ProblemDetail conflict(ConflictException exception) {
         return problem(HttpStatus.CONFLICT, "Conflicto", exception.getMessage(), "conflict");
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class, ObjectOptimisticLockingFailureException.class})
+    ProblemDetail persistenceConflict(RuntimeException exception) {
+        return problem(HttpStatus.CONFLICT, "Conflicto",
+                "El recurso fue modificado o ya existe un registro con esos datos", "persistence-conflict");
     }
 
     @ExceptionHandler(BadCredentialsException.class)
