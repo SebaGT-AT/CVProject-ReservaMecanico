@@ -72,6 +72,47 @@ public class AvailabilityService {
         return result;
     }
 
+    @Transactional(readOnly = true)
+    public int remainingFreeMinutes(ProfessionalProfile profile, LocalDate date) {
+        ZoneId zone = ZoneId.of(profile.getTimeZone());
+        List<WeeklySchedulePeriod> weeklyPeriods = periods
+                .findAllByProfessionalIdOrderByDayOfWeekAscStartTimeAsc(profile.getId());
+        Map<DayOfWeek, List<LocalInterval>> weekly = weeklyPeriods.stream()
+                .collect(Collectors.groupingBy(WeeklySchedulePeriod::getDayOfWeek,
+                        () -> new EnumMap<>(DayOfWeek.class),
+                        Collectors.mapping(item -> new LocalInterval(item.getStartTime(), item.getEndTime()), Collectors.toList())));
+        List<ScheduleException> dateExceptions = exceptions
+                .findAllByProfessionalIdAndDateBetweenOrderByDateAscStartTimeAsc(profile.getId(), date, date);
+        List<LocalInterval> localIntervals = intervalsFor(date, weekly, dateExceptions);
+        if (localIntervals.isEmpty()) return 0;
+
+        Instant dayStart = date.atStartOfDay(zone).toInstant();
+        Instant dayEnd = date.plusDays(1).atStartOfDay(zone).toInstant();
+        List<Appointment> busy = appointments.findActiveOverlappingRange(profile.getId(), dayStart, dayEnd,
+                EnumSet.of(AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED));
+        BookingPolicy policy = policies.findByProfessionalId(profile.getId()).orElseGet(() -> new BookingPolicy(profile));
+        Instant earliest = clock.instant().plus(Duration.ofMinutes(policy.getMinimumNoticeMinutes()));
+
+        long freeMinutes = 0;
+        for (LocalInterval interval : localIntervals) {
+            Instant intervalStart = ZonedDateTime.of(date, interval.start(), zone).toInstant();
+            Instant intervalEnd = ZonedDateTime.of(date, interval.end(), zone).toInstant();
+            Instant effectiveStart = intervalStart.isBefore(earliest) ? earliest : intervalStart;
+            if (!effectiveStart.isBefore(intervalEnd)) continue;
+            long intervalMinutes = Duration.between(effectiveStart, intervalEnd).toMinutes();
+            long busyMinutes = busy.stream().mapToLong(appointment -> overlapMinutes(
+                    effectiveStart, intervalEnd, appointment.getStartAt(), appointment.getBusyUntil())).sum();
+            freeMinutes += Math.max(0, intervalMinutes - busyMinutes);
+        }
+        return Math.toIntExact(freeMinutes);
+    }
+
+    private long overlapMinutes(Instant rangeStart, Instant rangeEnd, Instant busyStart, Instant busyEnd) {
+        Instant start = rangeStart.isAfter(busyStart) ? rangeStart : busyStart;
+        Instant end = rangeEnd.isBefore(busyEnd) ? rangeEnd : busyEnd;
+        return start.isBefore(end) ? Duration.between(start, end).toMinutes() : 0;
+    }
+
     private List<LocalInterval> intervalsFor(LocalDate date,
                                              Map<DayOfWeek, List<LocalInterval>> weekly,
                                              List<ScheduleException> dateExceptions) {

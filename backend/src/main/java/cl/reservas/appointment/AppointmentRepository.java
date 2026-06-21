@@ -39,4 +39,23 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
 
     List<Appointment> findAllByStatusAndStartAtBetweenOrderByStartAt(
             AppointmentStatus status, Instant from, Instant to);
+
+    long countByProfessionalIdAndStatusInAndStartAtGreaterThanEqualAndStartAtLessThan(
+            UUID professionalId, Collection<AppointmentStatus> statuses, Instant from, Instant to);
+
+    @Query(value = """
+            SELECT COUNT(*) FROM (
+                SELECT customer_id
+                FROM appointments
+                WHERE professional_id = :professionalId AND status <> 'CANCELLED'
+                GROUP BY customer_id
+                HAVING MIN(start_at) >= :from AND MIN(start_at) < :to
+            ) first_appointments
+            """, nativeQuery = true)
+    long countNewCustomers(@Param("professionalId") UUID professionalId,
+                           @Param("from") Instant from, @Param("to") Instant to);
+
+    @EntityGraph(attributePaths = {"professional", "professional.user", "customer", "service"})
+    List<Appointment> findTop5ByProfessionalIdAndStatusInAndStartAtGreaterThanEqualOrderByStartAtAsc(
+            UUID professionalId, Collection<AppointmentStatus> statuses, Instant from);
 }

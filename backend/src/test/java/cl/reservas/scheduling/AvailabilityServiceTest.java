@@ -47,8 +47,8 @@ class AvailabilityServiceTest {
         Clock clock = Clock.fixed(Instant.parse("2026-06-22T00:00:00Z"), ZoneOffset.UTC);
         availability = new AvailabilityService(profiles, services, periods, exceptions, policies, appointments, clock);
 
-        when(profiles.findBySlugAndPublishedTrue("ada")).thenReturn(Optional.of(profile));
-        when(services.findByIdAndProfessionalIdAndActiveTrue(offering.getId(), profile.getId()))
+        lenient().when(profiles.findBySlugAndPublishedTrue("ada")).thenReturn(Optional.of(profile));
+        lenient().when(services.findByIdAndProfessionalIdAndActiveTrue(offering.getId(), profile.getId()))
                 .thenReturn(Optional.of(offering));
         when(policies.findByProfessionalId(profile.getId())).thenReturn(Optional.of(policy));
         when(periods.findAllByProfessionalIdOrderByDayOfWeekAscStartTimeAsc(profile.getId()))
@@ -136,5 +136,19 @@ class AvailabilityServiceTest {
 
         assertThat(slots).extracting(AvailabilitySlotResponse::localStartTime)
                 .containsExactly(LocalTime.of(9, 0), LocalTime.of(11, 0));
+    }
+
+    @Test
+    void remainingCapacitySubtractsBusyAppointmentMinutes() {
+        User customer = new User("Grace", "grace@example.com", "encoded", Role.CUSTOMER);
+        Instant appointmentStart = Instant.parse("2026-06-22T14:00:00Z");
+        Appointment existing = new Appointment(profile, customer, offering, java.util.UUID.randomUUID(),
+                appointmentStart, appointmentStart.plusSeconds(3600), appointmentStart.plusSeconds(3600));
+        when(exceptions.findAllByProfessionalIdAndDateBetweenOrderByDateAscStartTimeAsc(profile.getId(), monday, monday))
+                .thenReturn(List.of());
+        when(appointments.findActiveOverlappingRange(eq(profile.getId()), any(Instant.class),
+                any(Instant.class), any())).thenReturn(List.of(existing));
+
+        assertThat(availability.remainingFreeMinutes(profile, monday)).isEqualTo(120);
     }
 }

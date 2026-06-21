@@ -22,7 +22,7 @@ public record AppointmentResponse(
         String cancellationReason,
         Instant cancelledAt
 ) {
-    static AppointmentResponse from(Appointment appointment) {
+    public static AppointmentResponse from(Appointment appointment) {
         return new AppointmentResponse(appointment.getId(), appointment.getStatus(), appointment.getStartAt(),
                 appointment.getEndAt(), appointment.getProfessionalTimeZone(), appointment.getService().getId(),
                 appointment.getServiceName(), appointment.getDurationMinutes(), appointment.getPriceAmount(),

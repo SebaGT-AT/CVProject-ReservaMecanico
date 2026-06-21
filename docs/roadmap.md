@@ -34,10 +34,10 @@ Cada etapa termina con migracion, pruebas, documentacion de API y una demo verti
 - Outbox y reintentos confiables. ✓
 - Plantillas HTML y preferencias por usuario quedan como mejora comercial.
 
-## 6. Dashboard
+## 6. Dashboard (completada)
 
-- Reservas de hoy, clientes nuevos y horas disponibles.
-- Consultas optimizadas e indices; definiciones de metricas documentadas.
+- Reservas de hoy, clientes nuevos y horas disponibles. ✓
+- Consultas optimizadas e indices; definiciones de metricas documentadas. ✓
 
 ## 7. Calidad comercial
 
@@ -52,4 +52,4 @@ Cada etapa termina con migracion, pruebas, documentacion de API y una demo verti
 
 ## Siguiente etapa recomendada
 
-Implementar dashboard real con reservas del dia, clientes nuevos y horas disponibles.
+Completar calidad comercial: pruebas integrales, CI/CD, observabilidad, accesibilidad y endurecimiento operativo.
