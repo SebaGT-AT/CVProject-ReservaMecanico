@@ -34,6 +34,12 @@ app:
   mail:
     delivery: ${MAIL_DELIVERY:log}
     from: ${MAIL_FROM:no-reply@reservas.local}
+  notifications:
+    poll-delay-ms: ${NOTIFICATION_POLL_DELAY_MS:5000}
+    initial-delay-ms: ${NOTIFICATION_INITIAL_DELAY_MS:5000}
+    batch-size: ${NOTIFICATION_BATCH_SIZE:20}
+    maximum-attempts: ${NOTIFICATION_MAXIMUM_ATTEMPTS:8}
+    reminder-cron: "${NOTIFICATION_REMINDER_CRON:0 */15 * * * *}"
   security:
     jwt:
       secret: ${JWT_SECRET:change-this-local-secret-with-at-least-32-characters}
@@ -44,4 +50,3 @@ app:
     one-time-token:
       verification-hours: 24
       password-reset-minutes: 30
-

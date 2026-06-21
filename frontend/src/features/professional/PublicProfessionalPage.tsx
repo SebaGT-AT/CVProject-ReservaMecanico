@@ -88,7 +88,7 @@ export function PublicProfessionalPage() {
         <div><h2>{service.name}</h2><p>{service.description}</p><small>{service.durationMinutes} minutos</small></div>
         <strong>{new Intl.NumberFormat('es-CL', { style: 'currency', currency: service.currency }).format(service.priceAmount)}</strong></button>)}</div>
       <aside className="col-lg-5"><div className="availability-panel"><p className="eyebrow">PRÓXIMOS HORARIOS</p>
-        {booked && <div className="booking-confirmation"><strong>Reserva confirmada</strong><p className="mb-2">Te esperamos el {new Intl.DateTimeFormat('es-CL', { dateStyle: 'long', timeStyle: 'short', timeZone: booked.professionalTimeZone }).format(new Date(booked.startAt))}.</p><Link to="/citas">Ver mis reservas →</Link></div>}
+        {booked && <div className="booking-confirmation"><strong>Reserva confirmada</strong><p className="mb-2">Te esperamos el {new Intl.DateTimeFormat('es-CL', { dateStyle: 'long', timeStyle: 'short', timeZone: booked.professionalTimeZone }).format(new Date(booked.startAt))}. Enviaremos la confirmación y el recordatorio a tu correo.</p><Link to="/citas">Ver mis reservas →</Link></div>}
         {error && <div className="alert alert-warning">{error}</div>}{loadingSlots ? <div className="spinner-border spinner-border-sm text-success"><span className="visually-hidden">Cargando</span></div>
           : availability.some((day) => day.slots.length > 0) ? availability.filter((day) => day.slots.length > 0).map((day) => <div className="availability-day" key={day.date}>
             <strong>{new Intl.DateTimeFormat('es-CL', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${day.date}T12:00:00Z`))}</strong>

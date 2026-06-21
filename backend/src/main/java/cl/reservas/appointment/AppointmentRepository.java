@@ -36,4 +36,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
                                                   @Param("rangeStart") Instant rangeStart,
                                                   @Param("rangeEnd") Instant rangeEnd,
                                                   @Param("statuses") Collection<AppointmentStatus> statuses);
+
+    List<Appointment> findAllByStatusAndStartAtBetweenOrderByStartAt(
+            AppointmentStatus status, Instant from, Instant to);
 }

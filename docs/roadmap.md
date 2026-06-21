@@ -28,10 +28,11 @@ Cada etapa termina con migracion, pruebas, documentacion de API y una demo verti
 - Reserva atomica sin solapamientos, cancelacion y transiciones de estado. ✓
 - Historial de clientes y citas. ✓
 
-## 5. Notificaciones
+## 5. Notificaciones (completada)
 
-- Confirmacion y recordatorios por correo.
-- Outbox, reintentos, plantillas y preferencias.
+- Confirmacion y recordatorios por correo. ✓
+- Outbox y reintentos confiables. ✓
+- Plantillas HTML y preferencias por usuario quedan como mejora comercial.
 
 ## 6. Dashboard
 
@@ -51,4 +52,4 @@ Cada etapa termina con migracion, pruebas, documentacion de API y una demo verti
 
 ## Siguiente etapa recomendada
 
-Implementar correo de confirmacion y recordatorios mediante transactional outbox.
+Implementar dashboard real con reservas del dia, clientes nuevos y horas disponibles.

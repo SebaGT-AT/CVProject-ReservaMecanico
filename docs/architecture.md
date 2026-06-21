@@ -65,7 +65,7 @@ La disponibilidad publicada no es una reserva. Al confirmar:
 4. una restriccion de exclusion de PostgreSQL impide solapamientos activos;
 5. confirmar y publicar un evento para correo/calendario.
 
-Los correos e integraciones se procesaran con **transactional outbox**, evitando perder mensajes si el proveedor externo falla.
+Los correos se procesan con **transactional outbox**, bloqueo `SKIP LOCKED`, deduplicacion y reintentos, evitando perder mensajes si el proveedor externo falla. El mismo patron alojara futuras integraciones.
 
 ## Integracion con Google Calendar
 

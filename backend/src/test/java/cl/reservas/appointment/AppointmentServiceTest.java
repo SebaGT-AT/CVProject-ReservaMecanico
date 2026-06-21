@@ -33,6 +33,7 @@ class AppointmentServiceTest {
     @Mock BookingPolicyRepository policies;
     @Mock UserRepository users;
     @Mock AvailabilityService availability;
+    @Mock AppointmentNotificationPublisher notifications;
     private AppointmentService appointmentService;
     private User customer;
     private ProfessionalProfile professional;
@@ -52,7 +53,7 @@ class AppointmentServiceTest {
         policy = new BookingPolicy(professional);
         policy.update(0, 30, 30, 15, 60);
         appointmentService = new AppointmentService(appointments, history, profiles, services, policies, users,
-                availability, Clock.fixed(now, ZoneOffset.UTC));
+                availability, notifications, Clock.fixed(now, ZoneOffset.UTC));
     }
 
     @Test
@@ -74,6 +75,7 @@ class AppointmentServiceTest {
         assertThat(result.appointment().serviceName()).isEqualTo("Consulta");
         assertThat(result.appointment().priceAmount()).isEqualByComparingTo("25000");
         verify(history).save(any(AppointmentStatusHistory.class));
+        verify(notifications).confirmed(any(Appointment.class));
     }
 
     @Test
@@ -118,6 +120,7 @@ class AppointmentServiceTest {
         assertThat(cancelled.status()).isEqualTo(AppointmentStatus.CANCELLED);
         assertThat(cancelled.cancellationReason()).isEqualTo("Cambio de planes");
         verify(history).save(any(AppointmentStatusHistory.class));
+        verify(notifications).cancelled(appointment);
     }
 
     @Test
