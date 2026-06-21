@@ -133,6 +133,7 @@ export function SchedulePage() {
           <NumberField label="Ventana máxima (días)" name="bookingWindowDays" register={policyForm.register} min={1} max={365} />
           <NumberField label="Intervalo entre inicios (min)" name="slotIntervalMinutes" register={policyForm.register} min={5} max={120} />
           <NumberField label="Buffer posterior (min)" name="bufferAfterMinutes" register={policyForm.register} min={0} max={180} />
+          <NumberField label="Límite para cancelar (min)" name="cancellationNoticeMinutes" register={policyForm.register} min={0} max={43200} />
         </div><button className="btn btn-primary" disabled={policyForm.formState.isSubmitting}>Guardar reglas</button></form></section>
 
         <section className="workspace-card"><h2>Días especiales y bloqueos</h2><form onSubmit={exceptionForm.handleSubmit(addException)}><div className="row">

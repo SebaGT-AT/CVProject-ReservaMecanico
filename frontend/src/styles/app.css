@@ -41,5 +41,17 @@ a { color: #246247; font-weight: 600; }
 .availability-panel { position: sticky; top: 2rem; padding: 1.5rem; border: 1px solid #dfe3df; border-radius: 1rem; background: #fff; }
 .availability-day { padding: 1rem 0; border-bottom: 1px solid #e5e8e5; text-transform: capitalize; }
 .slot-chip { padding: .35rem .65rem; border-radius: .45rem; color: #174b37; background: #dceee5; font-weight: 700; }
+.slot-button { border: 0; }
+.slot-button:hover, .slot-button:focus { color: #fff; background: #246247; }
+.booking-confirmation { margin-top: 1rem; padding: 1rem; border: 1px solid #b9d8c7; border-radius: .75rem; background: #edf5f0; }
+.appointment-list { display: grid; gap: 1rem; }
+.appointment-card { display: flex; justify-content: space-between; align-items: center; gap: 2rem; padding: 1.5rem; border: 1px solid #dfe3df; border-radius: 1rem; background: #fff; }
+.appointment-card h2 { margin: .5rem 0; font-family: Georgia, serif; }
+.appointment-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; }
+.appointment-status { display: inline-block; padding: .25rem .55rem; border-radius: 999px; font-size: .72rem; font-weight: 800; text-transform: uppercase; }
+.status-confirmed, .status-completed { color: #174b37; background: #dceee5; }
+.status-pending { color: #725b14; background: #fff0bd; }
+.status-cancelled, .status-no_show { color: #6b3434; background: #f2dddd; }
 @media (max-width: 767px) { .service-row, .public-service { align-items: flex-start; flex-direction: column; } }
 @media (max-width: 767px) { .schedule-day { grid-template-columns: 1fr; } }
+@media (max-width: 767px) { .appointment-card { align-items: flex-start; flex-direction: column; } .appointment-actions { justify-content: flex-start; } }

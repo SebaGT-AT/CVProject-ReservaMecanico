@@ -13,8 +13,10 @@ export function LoginPage() {
   const location = useLocation()
   const [error, setError] = useState('')
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>()
+  const returnTo = typeof location.state?.returnTo === 'string' && location.state.returnTo.startsWith('/')
+    && !location.state.returnTo.startsWith('//') ? location.state.returnTo : '/dashboard'
 
-  if (user) return <Navigate to="/dashboard" replace />
+  if (user) return <Navigate to={returnTo} replace />
 
   async function submit(values: FormValues) {
     setError('')
@@ -23,7 +25,7 @@ export function LoginPage() {
         method: 'POST', body: JSON.stringify(values),
       })
       authenticate(session)
-      navigate('/dashboard')
+      navigate(returnTo)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'No fue posible iniciar sesión')
     }
@@ -49,7 +51,7 @@ export function LoginPage() {
         <button className="btn btn-primary w-100 py-2" disabled={isSubmitting}>
           {isSubmitting ? 'Ingresando…' : 'Ingresar'}
         </button>
-        <div className="d-flex justify-content-between mt-4"><Link to="/registro">Crear cuenta</Link><Link to="/olvide-contrasena">Olvidé mi contraseña</Link></div>
+        <div className="d-flex justify-content-between mt-4"><Link to="/registro" state={{ returnTo }}>Crear cuenta</Link><Link to="/olvide-contrasena">Olvidé mi contraseña</Link></div>
         <p className="text-center mt-3 mb-0"><Link to="/reenviar-verificacion">Reenviar verificación</Link></p>
       </form>
     </AuthShell>

@@ -1,5 +1,7 @@
 package cl.reservas.scheduling;
 
+import cl.reservas.appointment.Appointment;
+import cl.reservas.appointment.AppointmentRepository;
 import cl.reservas.professional.*;
 import cl.reservas.user.Role;
 import cl.reservas.user.User;
@@ -16,6 +18,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +30,7 @@ class AvailabilityServiceTest {
     @Mock WeeklySchedulePeriodRepository periods;
     @Mock ScheduleExceptionRepository exceptions;
     @Mock BookingPolicyRepository policies;
+    @Mock AppointmentRepository appointments;
     private AvailabilityService availability;
     private ProfessionalProfile profile;
     private ServiceOffering offering;
@@ -37,9 +43,9 @@ class AvailabilityServiceTest {
         profile = new ProfessionalProfile(user, "ada", null, null, "America/Santiago", true, Set.of());
         offering = new ServiceOffering(profile, "Consulta", null, 60, new BigDecimal("25000"), "CLP", true);
         policy = new BookingPolicy(profile);
-        policy.update(0, 30, 30, 0);
+        policy.update(0, 30, 30, 0, 60);
         Clock clock = Clock.fixed(Instant.parse("2026-06-22T00:00:00Z"), ZoneOffset.UTC);
-        availability = new AvailabilityService(profiles, services, periods, exceptions, policies, clock);
+        availability = new AvailabilityService(profiles, services, periods, exceptions, policies, appointments, clock);
 
         when(profiles.findBySlugAndPublishedTrue("ada")).thenReturn(Optional.of(profile));
         when(services.findByIdAndProfessionalIdAndActiveTrue(offering.getId(), profile.getId()))
@@ -48,6 +54,9 @@ class AvailabilityServiceTest {
         when(periods.findAllByProfessionalIdOrderByDayOfWeekAscStartTimeAsc(profile.getId()))
                 .thenReturn(List.of(new WeeklySchedulePeriod(profile, DayOfWeek.MONDAY,
                         LocalTime.of(9, 0), LocalTime.of(12, 0))));
+        lenient().when(appointments.findActiveOverlappingRange(eq(profile.getId()), any(Instant.class),
+                        any(Instant.class), any()))
+                .thenReturn(List.of());
     }
 
     @Test
@@ -104,10 +113,28 @@ class AvailabilityServiceTest {
 
     @Test
     void minimumNoticeCanExcludeOtherwiseValidSlots() {
-        policy.update(18 * 60, 30, 30, 0);
+        policy.update(18 * 60, 30, 30, 0, 60);
         when(exceptions.findAllByProfessionalIdAndDateBetweenOrderByDateAscStartTimeAsc(profile.getId(), monday, monday))
                 .thenReturn(List.of());
 
         assertThat(availability.availability("ada", offering.getId(), monday, monday).getFirst().slots()).isEmpty();
+    }
+
+    @Test
+    void existingAppointmentRemovesOverlappingSlots() {
+        User customer = new User("Grace", "grace@example.com", "encoded", Role.CUSTOMER);
+        Instant appointmentStart = Instant.parse("2026-06-22T14:00:00Z");
+        Appointment existing = new Appointment(profile, customer, offering, java.util.UUID.randomUUID(),
+                appointmentStart, appointmentStart.plusSeconds(3600), appointmentStart.plusSeconds(3600));
+        when(appointments.findActiveOverlappingRange(eq(profile.getId()), any(Instant.class),
+                any(Instant.class), any()))
+                .thenReturn(List.of(existing));
+        when(exceptions.findAllByProfessionalIdAndDateBetweenOrderByDateAscStartTimeAsc(profile.getId(), monday, monday))
+                .thenReturn(List.of());
+
+        var slots = availability.availability("ada", offering.getId(), monday, monday).getFirst().slots();
+
+        assertThat(slots).extracting(AvailabilitySlotResponse::localStartTime)
+                .containsExactly(LocalTime.of(9, 0), LocalTime.of(11, 0));
     }
 }

@@ -4,10 +4,11 @@ public record BookingPolicyResponse(
         int minimumNoticeMinutes,
         int bookingWindowDays,
         int slotIntervalMinutes,
-        int bufferAfterMinutes
+        int bufferAfterMinutes,
+        int cancellationNoticeMinutes
 ) {
     static BookingPolicyResponse from(BookingPolicy policy) {
         return new BookingPolicyResponse(policy.getMinimumNoticeMinutes(), policy.getBookingWindowDays(),
-                policy.getSlotIntervalMinutes(), policy.getBufferAfterMinutes());
+                policy.getSlotIntervalMinutes(), policy.getBufferAfterMinutes(), policy.getCancellationNoticeMinutes());
     }
 }

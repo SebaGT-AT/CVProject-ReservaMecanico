@@ -7,5 +7,6 @@ public record BookingPolicyRequest(
         @Min(0) @Max(43200) int minimumNoticeMinutes,
         @Min(1) @Max(365) int bookingWindowDays,
         @Min(5) @Max(120) int slotIntervalMinutes,
-        @Min(0) @Max(180) int bufferAfterMinutes
+        @Min(0) @Max(180) int bufferAfterMinutes,
+        @Min(0) @Max(43200) int cancellationNoticeMinutes
 ) {}

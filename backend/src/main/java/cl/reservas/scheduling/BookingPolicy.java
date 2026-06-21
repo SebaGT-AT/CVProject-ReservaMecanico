@@ -15,6 +15,7 @@ public class BookingPolicy {
     @Column(name = "booking_window_days", nullable = false) private int bookingWindowDays;
     @Column(name = "slot_interval_minutes", nullable = false) private int slotIntervalMinutes;
     @Column(name = "buffer_after_minutes", nullable = false) private int bufferAfterMinutes;
+    @Column(name = "cancellation_notice_minutes", nullable = false) private int cancellationNoticeMinutes;
     @Column(name = "updated_at", nullable = false) private Instant updatedAt;
     @Version private long version;
 
@@ -23,15 +24,16 @@ public class BookingPolicy {
     public BookingPolicy(ProfessionalProfile professional) {
         this.id = UUID.randomUUID();
         this.professional = professional;
-        update(120, 60, 15, 0);
+        update(120, 60, 15, 0, 60);
     }
 
     public void update(int minimumNoticeMinutes, int bookingWindowDays,
-                       int slotIntervalMinutes, int bufferAfterMinutes) {
+                       int slotIntervalMinutes, int bufferAfterMinutes, int cancellationNoticeMinutes) {
         this.minimumNoticeMinutes = minimumNoticeMinutes;
         this.bookingWindowDays = bookingWindowDays;
         this.slotIntervalMinutes = slotIntervalMinutes;
         this.bufferAfterMinutes = bufferAfterMinutes;
+        this.cancellationNoticeMinutes = cancellationNoticeMinutes;
         this.updatedAt = Instant.now();
     }
 
@@ -40,4 +42,5 @@ public class BookingPolicy {
     public int getBookingWindowDays() { return bookingWindowDays; }
     public int getSlotIntervalMinutes() { return slotIntervalMinutes; }
     public int getBufferAfterMinutes() { return bufferAfterMinutes; }
+    public int getCancellationNoticeMinutes() { return cancellationNoticeMinutes; }
 }

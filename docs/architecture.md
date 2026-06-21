@@ -61,7 +61,7 @@ La disponibilidad publicada no es una reserva. Al confirmar:
 
 1. validar servicio, horario, excepciones y anticipacion;
 2. abrir transaccion;
-3. insertar la cita;
+3. insertar la cita con clave idempotente y `busy_until` que incluye buffer;
 4. una restriccion de exclusion de PostgreSQL impide solapamientos activos;
 5. confirmar y publicar un evento para correo/calendario.
 

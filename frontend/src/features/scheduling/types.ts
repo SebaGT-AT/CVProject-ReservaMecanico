@@ -12,6 +12,7 @@ export type BookingPolicy = {
   bookingWindowDays: number
   slotIntervalMinutes: number
   bufferAfterMinutes: number
+  cancellationNoticeMinutes: number
 }
 
 export type ScheduleException = {

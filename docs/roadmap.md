@@ -23,10 +23,10 @@ Cada etapa termina con migracion, pruebas, documentacion de API y una demo verti
 - Horario semanal y excepciones (feriados, vacaciones, bloqueos). ✓
 - Motor de slots, anticipacion minima, ventana maxima y buffers. ✓
 
-## 4. Citas
+## 4. Citas (completada)
 
-- Reserva atomica sin solapamientos, cancelacion y transiciones de estado.
-- Historial de clientes y citas.
+- Reserva atomica sin solapamientos, cancelacion y transiciones de estado. ✓
+- Historial de clientes y citas. ✓
 
 ## 5. Notificaciones
 
@@ -51,4 +51,4 @@ Cada etapa termina con migracion, pruebas, documentacion de API y una demo verti
 
 ## Siguiente etapa recomendada
 
-Implementar citas con reserva atomica, estados, cancelaciones e historial de clientes.
+Implementar correo de confirmacion y recordatorios mediante transactional outbox.

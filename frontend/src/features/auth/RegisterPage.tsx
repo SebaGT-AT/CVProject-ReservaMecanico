@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { AuthShell } from './LoginPage'
 import { useAuth } from './auth-context'
@@ -13,6 +13,7 @@ type FormValues = { name: string; email: string; password: string; role: Exclude
 export function RegisterPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [error, setError] = useState('')
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({ defaultValues: { role: 'PROFESSIONAL' } })
 
@@ -22,7 +23,8 @@ export function RegisterPage() {
     setError('')
     try {
       const result = await api<MessageResponse>('/api/v1/auth/register', { method: 'POST', body: JSON.stringify(values) })
-      navigate('/login', { state: { notice: result.message } })
+      const returnTo = typeof location.state?.returnTo === 'string' ? location.state.returnTo : undefined
+      navigate('/login', { state: { notice: result.message, returnTo } })
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'No fue posible crear la cuenta')
     }

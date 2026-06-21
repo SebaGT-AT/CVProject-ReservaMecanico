@@ -62,7 +62,7 @@ public class SchedulingManagementService {
         BookingPolicy policy = policies.findByProfessionalId(profile.getId())
                 .orElseGet(() -> new BookingPolicy(profile));
         policy.update(request.minimumNoticeMinutes(), request.bookingWindowDays(),
-                request.slotIntervalMinutes(), request.bufferAfterMinutes());
+                request.slotIntervalMinutes(), request.bufferAfterMinutes(), request.cancellationNoticeMinutes());
         return BookingPolicyResponse.from(policies.save(policy));
     }
 

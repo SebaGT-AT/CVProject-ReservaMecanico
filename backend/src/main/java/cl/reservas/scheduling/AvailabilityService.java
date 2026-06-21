@@ -1,6 +1,9 @@
 package cl.reservas.scheduling;
 
 import cl.reservas.common.exception.NotFoundException;
+import cl.reservas.appointment.Appointment;
+import cl.reservas.appointment.AppointmentRepository;
+import cl.reservas.appointment.AppointmentStatus;
 import cl.reservas.professional.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +19,18 @@ public class AvailabilityService {
     private final WeeklySchedulePeriodRepository periods;
     private final ScheduleExceptionRepository exceptions;
     private final BookingPolicyRepository policies;
+    private final AppointmentRepository appointments;
     private final Clock clock;
 
     public AvailabilityService(ProfessionalProfileRepository profiles, ServiceOfferingRepository services,
                                WeeklySchedulePeriodRepository periods, ScheduleExceptionRepository exceptions,
-                               BookingPolicyRepository policies, Clock clock) {
+                               BookingPolicyRepository policies, AppointmentRepository appointments, Clock clock) {
         this.profiles = profiles;
         this.services = services;
         this.periods = periods;
         this.exceptions = exceptions;
         this.policies = policies;
+        this.appointments = appointments;
         this.clock = clock;
     }
 
@@ -51,12 +56,17 @@ public class AvailabilityService {
         Map<LocalDate, List<ScheduleException>> byDate = exceptions
                 .findAllByProfessionalIdAndDateBetweenOrderByDateAscStartTimeAsc(profile.getId(), from, to).stream()
                 .collect(Collectors.groupingBy(ScheduleException::getDate));
+        Instant rangeStart = from.atStartOfDay(zone).toInstant();
+        Instant rangeEnd = to.plusDays(1).atStartOfDay(zone).toInstant();
+        List<Appointment> busyAppointments = appointments.findActiveOverlappingRange(
+                profile.getId(), rangeStart, rangeEnd,
+                EnumSet.of(AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED));
 
         List<AvailabilityDayResponse> result = new ArrayList<>();
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
             List<LocalInterval> available = intervalsFor(date, weekly, byDate.getOrDefault(date, List.of()));
             List<AvailabilitySlotResponse> slots = slotsFor(date, available, offering.getDurationMinutes(),
-                    policy, zone, earliest, latest);
+                    policy, zone, earliest, latest, busyAppointments);
             result.add(new AvailabilityDayResponse(date, slots));
         }
         return result;
@@ -81,7 +91,7 @@ public class AvailabilityService {
 
     private List<AvailabilitySlotResponse> slotsFor(LocalDate date, List<LocalInterval> intervals,
                                                     int durationMinutes, BookingPolicy policy, ZoneId zone,
-                                                    Instant earliest, Instant latest) {
+                                                    Instant earliest, Instant latest, List<Appointment> busyAppointments) {
         List<AvailabilitySlotResponse> slots = new ArrayList<>();
         for (LocalInterval interval : intervals) {
             for (LocalTime cursor = interval.start(); ; cursor = cursor.plusMinutes(policy.getSlotIntervalMinutes())) {
@@ -90,7 +100,11 @@ public class AvailabilityService {
                     ZonedDateTime start = ZonedDateTime.of(date, cursor, zone);
                     if (!start.toLocalDate().equals(date) || !start.toLocalTime().equals(cursor)) continue;
                     Instant startInstant = start.toInstant();
-                    if (!startInstant.isBefore(earliest) && !startInstant.isAfter(latest)) {
+                    Instant candidateBusyUntil = startInstant.plus(Duration.ofMinutes(requiredMinutes));
+                    boolean overlaps = busyAppointments.stream().anyMatch(appointment ->
+                            startInstant.isBefore(appointment.getBusyUntil())
+                                    && candidateBusyUntil.isAfter(appointment.getStartAt()));
+                    if (!overlaps && !startInstant.isBefore(earliest) && !startInstant.isAfter(latest)) {
                         ZonedDateTime end = start.plusMinutes(durationMinutes);
                         slots.add(new AvailabilitySlotResponse(startInstant, end.toInstant(),
                                 start.toLocalTime(), end.toLocalTime()));
