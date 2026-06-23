@@ -52,6 +52,13 @@ Cada etapa termina con migracion, pruebas, documentacion de API y una demo verti
 - Recuperación ante revocación y reintentos mediante outbox. ✓
 - Bloqueo por eventos externos, webhooks y API pública quedan como evolución.
 
+## 9. Preparación de lanzamiento (completada)
+
+- Consola administrativa, métricas, soporte operativo y auditoría. ✓
+- Smoke tests responsive con Playwright y publicación versionada de imágenes. ✓
+- Composición y checklist de staging. ✓
+- Piloto, E2E autenticado y aprobación legal siguen siendo puertas humanas de producción.
+
 ## Siguiente etapa recomendada
 
-Preparar la etapa de lanzamiento comercial: administración, métricas de negocio, soporte, pruebas E2E y despliegue de staging.
+Validar staging con usuarios piloto y completar el flujo E2E autenticado antes de promover la primera versión a producción.

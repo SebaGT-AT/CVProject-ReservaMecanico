@@ -74,6 +74,6 @@ public class NotificationOutbox {
     public String getPayload() { return payload; }
     public OutboxStatus getStatus() { return status; }
     public int getAttempts() { return attempts; }
-    public Instant getNextAttemptAt() { return nextAttemptAt; }
     public String getLastError() { return lastError; }
+    public Instant getNextAttemptAt() { return nextAttemptAt; }
 }

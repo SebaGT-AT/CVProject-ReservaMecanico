@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.Collection;
+import cl.reservas.notification.OutboxStatus;
 
 public interface CalendarSyncOutboxRepository extends JpaRepository<CalendarSyncOutbox, UUID> {
     @Modifying
@@ -39,4 +41,7 @@ public interface CalendarSyncOutboxRepository extends JpaRepository<CalendarSync
     List<CalendarSyncOutbox> findClaimable(@Param("now") Instant now,
                                            @Param("staleBefore") Instant staleBefore,
                                            @Param("batchSize") int batchSize);
+
+    long countByStatusIn(Collection<OutboxStatus> statuses);
+    List<CalendarSyncOutbox> findTop20ByStatusInOrderByNextAttemptAtAsc(Collection<OutboxStatus> statuses);
 }

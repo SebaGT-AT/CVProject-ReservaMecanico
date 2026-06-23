@@ -1,0 +1,8 @@
+services:
+  backend:
+    image: ghcr.io/${IMAGE_NAMESPACE:?IMAGE_NAMESPACE es obligatorio}/reservas-api:${IMAGE_TAG:?IMAGE_TAG es obligatorio}
+    pull_policy: always
+
+  frontend:
+    image: ghcr.io/${IMAGE_NAMESPACE:?IMAGE_NAMESPACE es obligatorio}/reservas-web:${IMAGE_TAG:?IMAGE_TAG es obligatorio}
+    pull_policy: always

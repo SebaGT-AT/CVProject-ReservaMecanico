@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface GoogleCalendarConnectionRepository extends JpaRepository<GoogleCalendarConnection, UUID> {
     Optional<GoogleCalendarConnection> findByProfessional_User_EmailIgnoreCase(String email);
+    long countByStatus(GoogleConnectionStatus status);
 }

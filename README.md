@@ -57,3 +57,5 @@ docker compose -f compose.prod.yaml up -d --build
 Consulta [docs/roadmap.md](docs/roadmap.md), [docs/architecture.md](docs/architecture.md), [docs/etapa-07-calidad-operativa.md](docs/etapa-07-calidad-operativa.md) y [docs/runbook-operaciones.md](docs/runbook-operaciones.md).
 
 La integración opcional con Google Calendar se configura siguiendo [docs/etapa-08-google-calendar.md](docs/etapa-08-google-calendar.md). Permanece deshabilitada hasta proporcionar credenciales OAuth y una clave AES independiente.
+
+La preparación de staging, consola administrativa y releases versionados está en [docs/etapa-09-lanzamiento.md](docs/etapa-09-lanzamiento.md). La salida a producción se controla con [docs/checklist-lanzamiento.md](docs/checklist-lanzamiento.md).

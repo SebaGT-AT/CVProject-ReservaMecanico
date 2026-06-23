@@ -59,6 +59,15 @@ a { color: #246247; font-weight: 600; }
 .status-confirmed, .status-completed { color: #174b37; background: #dceee5; }
 .status-pending { color: #725b14; background: #fff0bd; }
 .status-cancelled, .status-no_show { color: #6b3434; background: #f2dddd; }
+.admin-shell { max-width: 1680px; }
+.admin-metric { min-height: 180px; padding: 1.35rem; border-radius: 1rem; color: #f7f7f2; background: #183f31; display: flex; flex-direction: column; }
+.admin-metric span, .admin-metric small { color: #cddbd3; }
+.admin-metric strong { margin-block: auto; font-family: Georgia, serif; font-size: 3.2rem; font-weight: 500; }
+.admin-metric-warning { background: #744321; }
+.admin-search { width: min(260px, 100%); }
+.admin-role { width: 170px; }
+.operation-list { display: grid; gap: 1rem; }
+.operation-item { padding-block: 1rem; border-top: 1px solid #e5e8e5; }
 @media (max-width: 767px) { .service-row, .public-service { align-items: flex-start; flex-direction: column; } }
 @media (max-width: 767px) { .schedule-day { grid-template-columns: 1fr; } }
 @media (max-width: 767px) { .appointment-card { align-items: flex-start; flex-direction: column; } .appointment-actions { justify-content: flex-start; } }

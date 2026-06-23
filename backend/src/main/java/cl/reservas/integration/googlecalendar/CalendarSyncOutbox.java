@@ -52,8 +52,11 @@ public class CalendarSyncOutbox {
     }
 
     public UUID getId() { return id; }
+    public UUID getAppointmentId() { return appointmentId; }
     public UUID getProfessionalId() { return professionalId; }
     public CalendarSyncOperation getOperation() { return operation; }
     public String getPayload() { return payload; }
     public int getAttempts() { return attempts; }
+    public Instant getNextAttemptAt() { return nextAttemptAt; }
+    public String getLastError() { return lastError; }
 }

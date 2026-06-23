@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -34,15 +35,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 String token = authorization.substring(7);
                 var details = userDetailsService.loadUserByUsername(jwtService.extractSubject(token));
-                var authentication = new UsernamePasswordAuthenticationToken(
-                        details, null, details.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (JwtException | IllegalArgumentException ignored) {
+                if (details.isEnabled()) {
+                    var authentication = new UsernamePasswordAuthenticationToken(
+                            details, null, details.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (JwtException | AuthenticationException | IllegalArgumentException ignored) {
                 SecurityContextHolder.clearContext();
             }
         }
         filterChain.doFilter(request, response);
     }
 }
-

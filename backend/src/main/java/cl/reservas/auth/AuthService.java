@@ -98,7 +98,7 @@ public class AuthService {
         RefreshSession current = sessions.findByTokenHash(secureTokens.hash(rawToken))
                 .orElseThrow(() -> new InvalidTokenException("La sesion no es valida"));
         User user = current.getUser();
-        if (!current.isActive()) {
+        if (!current.isActive() || !user.isActive()) {
             sessions.revokeAllByUserId(user.getId(), Instant.now());
             audit.record(user, user.getEmail(), "REFRESH_REUSE_OR_EXPIRED", client);
             throw new InvalidTokenException("La sesion expiro o fue revocada");

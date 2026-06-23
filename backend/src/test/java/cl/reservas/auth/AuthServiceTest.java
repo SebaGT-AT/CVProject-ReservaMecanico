@@ -1,6 +1,7 @@
 package cl.reservas.auth;
 
 import cl.reservas.common.exception.EmailNotVerifiedException;
+import cl.reservas.common.exception.InvalidTokenException;
 import cl.reservas.security.JwtService;
 import cl.reservas.user.Role;
 import cl.reservas.user.User;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -95,5 +97,19 @@ class AuthServiceTest {
         assertThat(rotated.response().accessToken()).isEqualTo("access.jwt");
         verify(sessions).save(any(RefreshSession.class));
     }
-}
 
+    @Test
+    void disabledUserCannotRefreshAnExistingSession() {
+        User user = new User("Ada", "ada@example.com", "encoded", Role.CUSTOMER);
+        SecureTokenService tokens = new SecureTokenService();
+        String raw = tokens.generate();
+        user.setActive(false);
+        RefreshSession current = new RefreshSession(user, tokens.hash(raw),
+                Instant.now().plusSeconds(3600), client);
+        when(sessions.findByTokenHash(tokens.hash(raw))).thenReturn(Optional.of(current));
+
+        assertThatThrownBy(() -> service.refresh(raw, client))
+                .isInstanceOf(InvalidTokenException.class);
+        verify(sessions).revokeAllByUserId(eq(user.getId()), any());
+    }
+}

@@ -65,4 +65,6 @@ public class User {
         this.passwordHash = encodedPassword;
         this.passwordChangedAt = Instant.now();
     }
+
+    public void setActive(boolean active) { this.active = active; }
 }

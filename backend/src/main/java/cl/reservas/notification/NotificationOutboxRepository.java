@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.Collection;
 
 public interface NotificationOutboxRepository extends JpaRepository<NotificationOutbox, UUID> {
     boolean existsByDeduplicationKey(String deduplicationKey);
@@ -40,4 +41,7 @@ public interface NotificationOutboxRepository extends JpaRepository<Notification
     List<NotificationOutbox> findClaimable(@Param("now") Instant now,
                                             @Param("staleBefore") Instant staleBefore,
                                             @Param("batchSize") int batchSize);
+
+    long countByStatusIn(Collection<OutboxStatus> statuses);
+    List<NotificationOutbox> findTop20ByStatusInOrderByNextAttemptAtAsc(Collection<OutboxStatus> statuses);
 }

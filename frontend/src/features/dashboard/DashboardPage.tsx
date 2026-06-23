@@ -65,11 +65,12 @@ export function DashboardPage() {
     {error && <div className="alert alert-warning">{error}</div>}
     {user?.role === 'PROFESSIONAL' && <div className="d-flex flex-wrap gap-2 mb-5"><Link className="btn btn-primary" to="/perfil-profesional">Perfil y servicios</Link><Link className="btn btn-outline-success" to="/configurar-agenda">Configurar agenda</Link><Link className="btn btn-outline-secondary" to="/citas">Ver citas</Link></div>}
     {user?.role === 'CUSTOMER' && <Link className="btn btn-outline-secondary mb-5" to="/citas">Ver todas mis reservas</Link>}
+    {user?.role === 'ADMIN' && <Link className="btn btn-primary mb-5" to="/admin">Abrir consola administrativa</Link>}
 
     {loading ? <div className="spinner-border text-success"><span className="visually-hidden">Cargando</span></div>
       : user?.role === 'PROFESSIONAL' ? <ProfessionalContent summary={professional} />
         : user?.role === 'CUSTOMER' ? <CustomerContent activeCount={activeCustomerAppointments.length} completed={completed} next={nextAppointment} />
-          : <div className="workspace-card"><p className="mb-0">Panel administrativo pendiente de la etapa de operaciones.</p></div>}
+          : <div className="workspace-card"><p className="mb-0">La consola administrativa está disponible para operar usuarios, métricas y entregas fallidas.</p></div>}
   </main>
 }
 
